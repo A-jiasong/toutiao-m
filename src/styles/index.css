@@ -81,6 +81,7 @@ body {
 .login-container .page-nav-bar {
   background-color: #3296fa;
 }
-.login-container .page-nav-bar .van-nav-bar__title {
+.login-container .page-nav-bar .van-nav-bar__title,
+.login-container .page-nav-bar .van-icon {
   color: #fff;
 }

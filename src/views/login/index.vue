@@ -1,6 +1,8 @@
 <template>
   <div class="login-container">
-    <van-nav-bar class="page-nav-bar" title="登录" />
+    <van-nav-bar class="page-nav-bar" title="登录">
+      <van-icon name="cross" slot="left" @click="$router.back()" />
+    </van-nav-bar>
     <van-form @submit="onSubmit" ref="loginForm">
       <van-field
         v-model="user.mobile"
@@ -36,6 +38,7 @@
             class="send-sms-btn"
             round
             size="small"
+            native-type="button"
             @click="onSendSms"
             >发送验证码</van-button
           >
@@ -112,6 +115,9 @@ export default {
         // 4、登录成功，存储token，跳转页面
         this.$store.commit('setUser', res.data.data)
         this.$toast.success('登录成功')
+
+        // 登录成功，退回原页面（不严谨）
+        this.$router.back()
       } catch (error) {
         if (error.response.status === 400) {
           this.$toast.fail('手机号或验证码错误')
