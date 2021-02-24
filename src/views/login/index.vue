@@ -26,7 +26,7 @@
         <template #button>
           <van-count-down
             v-if="isCountDownShow"
-            :time="1000 * 5"
+            :time="1000 * 60"
             format="ss s"
             @finish="isCountDownShow = false"
           />
@@ -70,7 +70,7 @@ export default {
             message: '手机号不能为空'
           },
           {
-            pattern: /^1[3|5|7|8]\d{9}$/,
+            pattern: /^1[3578]\d{9}$/,
             message: '手机号格式错误'
           }
         ],
@@ -97,7 +97,7 @@ export default {
     // 表单提交函数
     async onSubmit() {
       // 1、获取表单数据
-      const user = this.user
+      // const user = this.user
       // 2、进行表单验证
       // 3、向后台发送登录的请求
       // 在组件中必须通过 this.$toast 来调用 toast 组件
@@ -107,8 +107,10 @@ export default {
         duration: 0 // 持续时间，默认是2000，为0 则持续展示
       })
       try {
-        const res = await login(user)
+        const res = await login(this.user)
         console.log(res)
+        // 4、登录成功，存储token，跳转页面
+        this.$store.commit('setUser', res.data.data)
         this.$toast.success('登录成功')
       } catch (error) {
         if (error.response.status === 400) {
@@ -117,7 +119,6 @@ export default {
           this.$toast.fail('登录失败，请稍后重试')
         }
       }
-      // 4、登录成功，存储token，跳转页面
     },
     // 发送验证码
     async onSendSms() {
