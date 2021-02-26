@@ -123,7 +123,9 @@ export default {
         this.$toast.success('登录成功')
 
         // 登录成功，退回原页面（不严谨）
-        this.$router.back()
+        // this.$router.back()
+        // 从哪里过来的，直接到哪里去，获取不到toMy 数据，就跳到首页
+        this.$router.push(this.$route.query.toMy || '/')
       } catch (error) {
         if (error.response.status === 400) {
           this.$toast.fail('手机号或验证码错误')
