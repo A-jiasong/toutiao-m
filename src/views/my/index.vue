@@ -39,7 +39,11 @@
     </div>
     <!-- 未登录模块 -->
     <div v-else class="header not-login">
-      <div class="login-btn" @click="$router.push('/login')">
+      <!-- 通过name=login来进行页面的跳转，通过query进行传参toMy：'/my' -->
+      <div
+        class="login-btn"
+        @click="$router.push({ name: 'login', query: { toMy: '/my' } })"
+      >
         <img class="mobile-img" src="~@/assets/mobile.png" alt="" />
         <span class="text">登录 / 注册</span>
       </div>

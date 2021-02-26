@@ -1,7 +1,13 @@
 <template>
   <div class="login-container">
     <van-nav-bar class="page-nav-bar" title="登录">
-      <van-icon name="cross" slot="left" @click="$router.back()" />
+      <!-- route判断是否有参数，有才显示,通过router进行路由跳转 -->
+      <van-icon
+        v-if="$route.query.toMy"
+        name="cross"
+        slot="left"
+        @click="$router.back()"
+      />
     </van-nav-bar>
     <van-form @submit="onSubmit" ref="loginForm">
       <van-field
