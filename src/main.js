@@ -9,6 +9,8 @@ import Vant from 'vant'
 import 'vant/lib/index.css'
 // 导入动态设置rem基准值
 import 'amfe-flexible'
+// 导入时间组件
+import './utils/dayjs'
 
 Vue.use(Vant)
 

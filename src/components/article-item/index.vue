@@ -17,7 +17,7 @@
       <div class="label-info-wrap">
         <span>{{ article.aut_name }}</span>
         <span>{{ article.comm_count }}</span>
-        <span>{{ article.pubdate }}</span>
+        <span>{{ article.pubdate | relativeTime }}</span>
       </div>
     </div>
     <van-image
@@ -66,7 +66,7 @@ export default {
     width: 232px;
     height: 146px;
   }
-  .label-info-wrap {
+  .label-info-wrap span {
     font-size: 22px;
     color: #b4b4b4;
     margin-right: 25px;
