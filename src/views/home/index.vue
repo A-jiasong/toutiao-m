@@ -24,25 +24,47 @@
       </van-tab>
       <!-- 放一个空的插槽，当tab移到最右边时，不至于会把最后一个挡住 -->
       <div slot="nav-right" class="placeholder"></div>
-      <div slot="nav-right" class="hamburger-btn">
+      <div
+        slot="nav-right"
+        class="hamburger-btn"
+        @click="isEditChannelShow = true"
+      >
         <i class="toutiao toutiao-gengduo"></i>
       </div>
     </van-tabs>
+    <!-- 频道编辑 -->
+    <van-popup
+      class="edit-channel-popup"
+      v-model="isEditChannelShow"
+      position="bottom"
+      :style="{ height: '100%' }"
+      closeable
+      close-icon-position="top-left"
+    >
+      <!-- 父组件通过$on监听子组件事件 -->
+      <channel-edit
+        :myChannels="channels"
+        :active="active"
+        @update-active="onUpdateActive"
+      ></channel-edit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list.vue'
+import ChannelEdit from './components/channel-edit.vue'
 
 export default {
   name: 'homePage',
-  components: { ArticleList },
+  components: { ArticleList, ChannelEdit },
   props: {},
   data() {
     return {
       active: 0,
-      channels: [] // 频道列表
+      channels: [], // 频道列表
+      isEditChannelShow: false
     }
   },
   computed: {},
@@ -56,7 +78,13 @@ export default {
       try {
         const { data } = await getUserChannels()
         this.channels = data.data.channels
-      } catch (err) {}
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    onUpdateActive(index, isEditChannelShow) {
+      this.active = index
+      this.isEditChannelShow = isEditChannelShow
     }
   }
 }
@@ -139,6 +167,10 @@ export default {
         background-size: contain;
       }
     }
+  }
+  .edit-channel-popup {
+    padding-top: 100px;
+    box-sizing: border-box;
   }
 }
 </style>
