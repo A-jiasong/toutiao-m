@@ -51,7 +51,13 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/article.js'
+import {
+  getAllChannels,
+  addUserChannel,
+  deleteUserChannel
+} from '@/api/article.js'
+import { mapState } from 'vuex'
+import { setItem } from '@/utils/storage'
 
 export default {
   name: 'channelEdit',
@@ -84,7 +90,7 @@ export default {
           return myChannel.id === channel.id
         })
       })
-    }
+    },
     // recommendChannels() {
     //   const channels = []
     //   this.allChannels.forEach(channel => {
@@ -100,6 +106,8 @@ export default {
     //   // 把计算结果返回
     //   return channels
     // }
+    // 将store中的state中的user，通过...扩展运算符扩展出来
+    ...mapState(['user'])
   },
   watch: {},
   created() {
@@ -118,8 +126,24 @@ export default {
     },
 
     // 点击下面频道推荐
-    onAddChannel(channel) {
+    async onAddChannel(channel) {
       this.myChannels.push(channel)
+
+      // 数据持久化处理
+      if (this.user) {
+        try {
+          // 已登录，把数据请求接口放到线上
+          await addUserChannel({
+            id: channel.id, // 频道id
+            seq: this.myChannels.length // 序号
+          })
+        } catch (err) {
+          this.$toast('保存失败，请稍后重试')
+        }
+      } else {
+        // 未登录，将数据存储到本地
+        setItem('TOUTIAO_CHANNELS', this.myChannels)
+      }
     },
 
     // 点击我的频道
@@ -134,11 +158,28 @@ export default {
         if (index <= this.active) {
           // 删除的元素在当前元素的前面，就将active减一
           this.$emit('update-active', this.active - 1, true)
+
+          // 删除数据持久化，封装成下面函数
         }
       } else {
         // 执行跳转操作
         // 此时是子组件向父组件传值
         this.$emit('update-active', index, false)
+      }
+    },
+
+    async deleteChannel(channel) {
+      try {
+        if (this.user) {
+          // 已经登录，将数据存储到线上
+          await deleteUserChannel(channel.id)
+        } else {
+          // 未登录，将数据存储到本地
+          setItem('TOUTIAO_CHANNELS', this.myChannels)
+        }
+      } catch (err) {
+        console.log(err)
+        this.$toast('删除频道失败，请稍后重试')
       }
     }
   }
@@ -147,7 +188,7 @@ export default {
 
 <style scoped lang="less">
 .channel-edit {
-  padding: 85px 0;
+  padding: 60px 0;
   .title-text {
     font-size: 32px;
     color: #333333;

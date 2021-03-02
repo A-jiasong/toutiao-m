@@ -28,7 +28,7 @@ export const getUserInfo = () => {
     // 该接口需要授权才能访问
     // token的数据格式：Bearer token数据，Bearer后面有一个空格
     // Authorization: `Bearer ${store.state.user.token}`
-    // }
+    // }   在request.js中设置请求拦截器
   })
 }
 
