@@ -2,10 +2,25 @@
 import axios from 'axios'
 // 引入store，来获取token数据
 import store from '@/store'
+// 处理大数字问题
+import JSONBig from 'json-bigint'
 
 const request = axios.create({
   // 接口的基准地址
-  baseURL: 'http://ttapi.research.itcast.cn/'
+  baseURL: 'http://ttapi.research.itcast.cn/',
+
+  // 自定义后端返回的原始数据
+  // data： 后端返回的原始数据，就是json格式的字符串
+  transformResponse: [
+    function(data) {
+      try {
+        return JSONBig.parse(data)
+      } catch (err) {
+        return data
+      }
+      // axios 默认会在内部这样来处理后端返回的数据
+    }
+  ]
 })
 
 // 请求拦截器

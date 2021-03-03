@@ -1,6 +1,17 @@
 <template>
   <!-- 单元格组件 -->
-  <van-cell class="article-item">
+  <!-- :to="`/article/${article.art_id}`"
+   -->
+  <van-cell
+    class="article-item"
+    :to="{
+      // 根据路由名称进行跳转
+      name: 'article',
+      params: {
+        articleId: article.art_id
+      }
+    }"
+  >
     <div slot="title" class="title van-multi-ellipsis--l2">
       {{ article.title }}
     </div>
