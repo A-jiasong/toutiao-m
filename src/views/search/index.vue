@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <!-- 搜索栏 事件监听 -->
-    <form action="/">
+    <form class="search-form" action="/">
       <van-search
         v-model="searchValue"
         show-action
@@ -12,10 +12,14 @@
       />
     </form>
     <!-- 搜索历史记录 -->
-    <search-result v-if="isResultShow" />
+    <search-result v-if="isResultShow" :searchValue="searchValue" />
 
     <!-- 联想建议 -->
-    <search-suggestion v-else-if="searchValue" :searchValue="searchValue" />
+    <search-suggestion
+      @search="onSearch"
+      v-else-if="searchValue"
+      :searchValue="searchValue"
+    />
 
     <!-- 搜索结果 -->
     <search-history v-else />
@@ -58,8 +62,18 @@ export default {
 </script>
 
 <style scoped lang="less">
-.van-search {
-  background-color: #3395fa;
+.search-container {
+  padding-top: 106px;
+  .search-form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+  .van-search {
+    background-color: #3395fa;
+  }
   .van-search__action {
     color: #fff;
   }
