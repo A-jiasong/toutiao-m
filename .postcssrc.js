@@ -5,10 +5,14 @@ module.exports = {
     //   browsers: ['Android >= 4.0', 'iOS >= 8']
     // },
     'postcss-pxtorem': {
-      rootValue ({ file }) {
+      rootValue({ file }) {
         return file.indexOf('vant') !== -1 ? 37.5 : 75
       },
-      propList: ['*']
+      // 配置要转换的css属性
+      // * 表示所有
+      propList: ['*'],
+      // 配置不用转换的样式资源
+      exclude: 'github-markdown'
     }
   }
 }

@@ -6,15 +6,15 @@
 
     <div class="main-wrap">
       <!-- 加载中 -->
-      <div class="loading-wrap">
+      <div v-if="isLoading" class="loading-wrap">
         <van-loading color="#3296fa" vertical>加载中</van-loading>
       </div>
       <!-- /加载中 -->
 
       <!-- 加载完成-文章详情 -->
-      <div class="article-detail">
+      <div v-else-if="article.title" class="article-detail">
         <!-- 文章标题 -->
-        <h1 class="article-title">这是文章标题</h1>
+        <h1 class="article-title">{{ article.title }}</h1>
         <!-- /文章标题 -->
 
         <!-- 用户信息 -->
@@ -24,42 +24,69 @@
             slot="icon"
             round
             fit="cover"
-            src="https://img.yzcdn.cn/vant/cat.jpeg"
+            :src="article.aut_photo"
           />
-          <div slot="title" class="user-name">黑马头条号</div>
-          <div slot="label" class="publish-date">14小时前</div>
+          <div slot="title" class="user-name">{{ article.aut_name }}</div>
+          <div slot="label" class="publish-date">{{ article.pubdate }}</div>
+          <!-- 将关注按钮封装为一个组件，方便其他文件复用 component-> -->
+          <!-- 模板中的 $event 是事件参数
+            当我们传递给子组件的数据既要使用还要修改
+            传递： props
+            :is_followed="article.is_followed"
+            修改：自定义事件
+            @update-follow="article.is_followed = $event"
+            简写方式：在组件上使用v-model
+            value="article.is_followed"
+            @input="article.is_followed = $event"
+           -->
+          <followed-user
+            class="follow-btn"
+            :user_id="article.aut_id"
+            v-model="article.is_followed"
+          />
+          <!-- <van-button
+            v-if="article.is_followed"
+            class="follow-btn"
+            round
+            size="small"
+            @click="onFollow"
+            :loading="followLoading"
+            >已关注</van-button
+          >
           <van-button
+            v-else
             class="follow-btn"
             type="info"
             color="#3296fa"
             round
             size="small"
             icon="plus"
+            @click="onFollow"
+            :loading="followLoading"
             >关注</van-button
-          >
-          <!-- <van-button
-            class="follow-btn"
-            round
-            size="small"
-          >已关注</van-button> -->
+          > -->
         </van-cell>
         <!-- /用户信息 -->
 
         <!-- 文章内容 -->
-        <div class="article-content">这是文章内容</div>
+        <div
+          class="article-content markdown-body"
+          v-html="article.content"
+          ref="article-content"
+        ></div>
         <van-divider>正文结束</van-divider>
       </div>
       <!-- /加载完成-文章详情 -->
 
       <!-- 加载失败：404 -->
-      <div class="error-wrap">
+      <div v-else-if="errStatus === 404" class="error-wrap">
         <van-icon name="failure" />
         <p class="text">该资源不存在或已删除！</p>
       </div>
       <!-- /加载失败：404 -->
 
       <!-- 加载失败：其它未知错误（例如网络原因或服务端异常） -->
-      <div class="error-wrap">
+      <div v-else class="error-wrap">
         <van-icon name="failure" />
         <p class="text">内容加载失败！</p>
         <van-button class="retry-btn">点击重试</van-button>
@@ -83,10 +110,14 @@
 
 <script>
 import { getArticleById } from '@/api/article'
+import { ImagePreview } from 'vant'
+import FollowedUser from '@/components/followed-user/index'
 
 export default {
   name: 'articleIndex',
-  components: {},
+  components: {
+    FollowedUser
+  },
   props: {
     articleId: {
       type: [Number, String, Object],
@@ -94,7 +125,12 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      article: {}, // 文章详情
+      isLoading: true, // 加载中的显示与隐藏
+      errStatus: 0, // 失败的状态码
+      followLoading: false
+    }
   },
   computed: {},
   watch: {},
@@ -107,15 +143,46 @@ export default {
       try {
         const { data } = await getArticleById(this.articleId)
         console.log(data)
+        this.article = data.data
+        // 数据加载完成
+        setTimeout(() => {
+          this.previewImage()
+        }, 10)
       } catch (err) {
+        if (err.response && err.response.status === 404) {
+          this.errStatus = 404
+        }
         console.log('获取文章失败')
+        this.$toast('获取失败')
       }
+      // 加载完成
+      this.isLoading = false
+    },
+    // 处理图片预览函数
+    previewImage() {
+      const articleContent = this.$refs['article-content']
+      // 得到所有的img节点
+      const imgs = articleContent.querySelectorAll('img')
+      const images = []
+      // 将所有图片的地址存放到images里面
+      imgs.forEach((img, index) => {
+        images.push(img.src)
+        img.onclick = () => {
+          ImagePreview({
+            images,
+            // 预览图片的起始位置
+            startPosition: index
+          })
+        }
+      })
     }
   }
 }
 </script>
 
 <style scoped lang="less">
+@import './github-markdown.css';
+
 .article-container {
   .main-wrap {
     position: fixed;
