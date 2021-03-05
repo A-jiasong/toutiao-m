@@ -88,7 +88,13 @@
             :articleId="article.art_id"
           />
           <!-- <van-button class="btn-item" icon="star-o" /> -->
-          <van-button class="btn-item" icon="good-job-o" />
+          <!-- 点赞组件 -->
+          <like-article
+            class="btn-item"
+            v-model="article.attitude"
+            :articleId="article.art_id"
+          />
+          <!-- <van-button class="btn-item" icon="good-job-o" /> -->
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
@@ -118,12 +124,14 @@ import { getArticleById } from '@/api/article'
 import { ImagePreview } from 'vant'
 import FollowedUser from '@/components/followed-user/index'
 import CollectArticle from '@/components/collect-article'
+import LikeArticle from '@/components/like-article'
 
 export default {
   name: 'articleIndex',
   components: {
     FollowedUser,
-    CollectArticle
+    CollectArticle,
+    LikeArticle
   },
   props: {
     articleId: {
