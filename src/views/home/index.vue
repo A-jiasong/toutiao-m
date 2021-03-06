@@ -138,7 +138,7 @@ export default {
     .van-tabs__wrap {
       position: fixed;
       top: 92px;
-      z-index: 1;
+      // z-index: 1;
       left: 0;
       right: 0;
       height: 82px;
